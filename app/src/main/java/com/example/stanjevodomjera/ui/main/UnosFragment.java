@@ -1,5 +1,7 @@
 package com.example.stanjevodomjera.ui.main;
 
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
@@ -9,12 +11,20 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
+import android.widget.ListAdapter;
+import android.widget.ListView;
 import android.widget.Toast;
 
+import com.example.stanjevodomjera.DbHandler;
 import com.example.stanjevodomjera.R;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -84,16 +94,26 @@ public class UnosFragment extends Fragment {
                 String dan = String.valueOf(datePicker.getDayOfMonth());
                 String mjesec = String.valueOf(datePicker.getMonth());
                 String godina = String.valueOf(datePicker.getYear());
-                String vodomjer = String.valueOf(stanjeVodomjeraEditText.getText());
+                String stanje = String.valueOf(stanjeVodomjeraEditText.getText());
 
-                if (vodomjer.length() == 0)
+                if (stanje.length() == 0)
                 {
                     Toast.makeText(getActivity(),"UNESITE STANJE VODOMJERA",Toast.LENGTH_SHORT).show();
                 }
                 else
                 {
-                    Log.d("UNOS ", dan + " / " + mjesec + " / " + godina + " VODOMJER : " + vodomjer);
+                    String datum = dan + " / " + mjesec + " / " + godina;
+                    Log.d("UNOS ", dan + " / " + mjesec + " / " + godina + " VODOMJER : " + stanje);
                     Toast.makeText(getActivity(),"UNOS SPREMLJEN",Toast.LENGTH_SHORT).show();
+
+                    DbHandler dbHandler = new DbHandler(getContext());
+                    dbHandler.insertEntry(datum,stanje);
+                    ArrayList<String> items = dbHandler.GetEntries();
+
+                    ArrayAdapter<String> adapter =
+                            new ArrayAdapter<String>(getActivity(), android.R.layout.simple_list_item_1,items);
+                    ListView listView = getActivity().findViewById(R.id.listViewIspis);
+                    listView.setAdapter((ListAdapter) adapter);
                 }
             }
         });

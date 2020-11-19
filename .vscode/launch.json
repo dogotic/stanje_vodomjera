@@ -1,0 +1,56 @@
+// A launch configuration that launches the extension inside a new window
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Launch Extension",
+            "type": "extensionHost",
+            "request": "launch",
+            "runtimeExecutable": "${execPath}",
+            "args": ["--extensionDevelopmentPath=${workspaceRoot}" ],
+            "stopOnEntry": false,
+            "skipFiles": [
+                "<node_internals>/**"
+            ]
+        },
+        {
+			"type": "node",
+			"request": "attach",
+			"name": "Attach to Language Server",
+			"port": 6009,
+            "cwd": "${workspaceFolder}/langserver",
+            "skipFiles": [
+                "<node_internals>/**"
+            ]
+        },
+        {
+			"name": "Debugger Server",
+			"type": "node",
+			"request": "launch",
+			"cwd": "${workspaceRoot}",
+			"program": "${workspaceRoot}/src/debugMain.js",
+			"args": [ "--server=4711" ],
+            "skipFiles": [
+                "<node_internals>/**"
+            ]
+		},
+        {
+            "name": "Launch Tests",
+            "type": "extensionHost",
+            "request": "launch",
+            "runtimeExecutable": "${execPath}",
+            "args": ["--extensionDevelopmentPath=${workspaceRoot}", "--extensionTestsPath=${workspaceRoot}/test" ],
+            "stopOnEntry": false
+        }
+    ],
+	"compounds": [
+		{
+			"name": "Extension + Debugger",
+			"configurations": [ "Launch Extension", "Debugger Server" ]
+		},
+		{
+			"name": "Debug Language Server",
+			"configurations": [ "Launch Extension", "Attach to Language Server" ]
+		}
+	]
+}

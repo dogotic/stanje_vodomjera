@@ -1,20 +1,25 @@
 package com.example.stanjevodomjera.ui.main;
 
+import android.database.Cursor;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.ListAdapter;
 import android.widget.ListView;
 
+import com.example.stanjevodomjera.DbHandler;
 import com.example.stanjevodomjera.R;
 
 import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 
 import static android.R.layout.simple_list_item_1;
@@ -72,15 +77,22 @@ public class IspisFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_ispis, container, false);
+        View view = inflater.inflate(R.layout.fragment_ispis, container, false);
+        return view;
     }
 
     @Override
-    public void onActivityCreated(Bundle savedInstanceState) {
+    public void onActivityCreated(Bundle savedInstanceState)
+    {
+        DbHandler dbHandler = new DbHandler(getContext());
+        ArrayList<String> items = dbHandler.GetEntries();
+
+        ArrayAdapter<String> adapter = new ArrayAdapter<String>(getActivity(),
+                android.R.layout.simple_list_item_1, android.R.id.text1, items);
+
+        ListView listView = getActivity().findViewById(R.id.listViewIspis);
+        listView.setAdapter((ListAdapter) adapter);
+
         super.onActivityCreated(savedInstanceState);
-        ArrayAdapter adapter = ArrayAdapter.createFromResource(getActivity(),
-                R.array.Planets, android.R.layout.simple_list_item_1);
-        listViewIspis = getActivity().findViewById(R.id.listViewIspis);
-        listViewIspis.setAdapter(adapter);
     }
 }
