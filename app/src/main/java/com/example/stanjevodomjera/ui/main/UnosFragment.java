@@ -103,16 +103,19 @@ public class UnosFragment extends Fragment {
                 else
                 {
                     String datum = dan + " / " + mjesec + " / " + godina;
-                    Log.d("UNOS ", dan + " / " + mjesec + " / " + godina + " VODOMJER : " + stanje);
                     Toast.makeText(getActivity(),"UNOS SPREMLJEN",Toast.LENGTH_SHORT).show();
 
+                    ListView listView = getActivity().findViewById(R.id.listViewIspis);
+
+                    int id = listView.getCount();
+                    Log.d("INSERT","ID = " + id);
+
                     DbHandler dbHandler = new DbHandler(getContext());
-                    dbHandler.insertEntry(datum,stanje);
+                    dbHandler.insertEntry(id,datum,stanje);
                     ArrayList<String> items = dbHandler.GetEntries();
 
                     ArrayAdapter<String> adapter =
                             new ArrayAdapter<String>(getActivity(), android.R.layout.simple_list_item_1,items);
-                    ListView listView = getActivity().findViewById(R.id.listViewIspis);
                     listView.setAdapter((ListAdapter) adapter);
                 }
             }

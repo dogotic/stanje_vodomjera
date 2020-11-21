@@ -25,7 +25,7 @@ public class DbHandler extends SQLiteOpenHelper
     @Override
     public void onCreate(SQLiteDatabase db){
         String CREATE_TABLE = "CREATE TABLE " + TABLE_StanjeVodomjera + "("
-                + KEY_ID + " INTEGER PRIMARY KEY AUTOINCREMENT," + KEY_DATUM + " TEXT,"
+                + KEY_ID + " INTEGER," + KEY_DATUM + " TEXT,"
                 + KEY_STANJE + " TEXT"+ ")";
         db.execSQL(CREATE_TABLE);
     }
@@ -38,12 +38,13 @@ public class DbHandler extends SQLiteOpenHelper
     }
 
     // Adding new User Details
-    public void insertEntry(String datum, String stanje)
+    public void insertEntry(int id, String datum, String stanje)
     {
         //Get the Data Repository in write mode
         SQLiteDatabase db = this.getWritableDatabase();
         //Create a new map of values, where column names are the keys
         ContentValues cValues = new ContentValues();
+        cValues.put(KEY_ID,id);
         cValues.put(KEY_DATUM, datum);
         cValues.put(KEY_STANJE, stanje);
         // Insert the new row, returning the primary key value of the new row
@@ -68,11 +69,14 @@ public class DbHandler extends SQLiteOpenHelper
         }
 
         /* re-format the list */
-        for (int i=0; i<entryList.size(); i++)
-        {
-            Log.d("DBHANDLER", String.valueOf(entryList.get(i)));
-        }
-
         return  entryList;
+    }
+
+    public void DeleteEntry(int id)
+    {
+        //Get the Data Repository in write mode
+        SQLiteDatabase db = this.getWritableDatabase();
+        db.delete(TABLE_StanjeVodomjera, KEY_ID+" = ?",new String[]{String.valueOf(id)});
+        db.close();
     }
 }

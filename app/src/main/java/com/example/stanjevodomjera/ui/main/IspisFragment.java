@@ -1,5 +1,6 @@
 package com.example.stanjevodomjera.ui.main;
 
+import android.annotation.SuppressLint;
 import android.database.Cursor;
 import android.os.Bundle;
 
@@ -9,9 +10,11 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListAdapter;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import com.example.stanjevodomjera.DbHandler;
 import com.example.stanjevodomjera.R;
@@ -39,7 +42,7 @@ public class IspisFragment extends Fragment {
     // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
-
+    private DbHandler dbHandler;
     private ListView listViewIspis;
 
     public IspisFragment() {
@@ -84,14 +87,34 @@ public class IspisFragment extends Fragment {
     @Override
     public void onActivityCreated(Bundle savedInstanceState)
     {
-        DbHandler dbHandler = new DbHandler(getContext());
+        dbHandler = new DbHandler(getContext());
         ArrayList<String> items = dbHandler.GetEntries();
 
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(getActivity(),
                 android.R.layout.simple_list_item_1, android.R.id.text1, items);
-
         ListView listView = getActivity().findViewById(R.id.listViewIspis);
         listView.setAdapter((ListAdapter) adapter);
+
+        listView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+            @SuppressLint("WrongConstant")
+            @Override
+            public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id)
+            {
+                Log.d("DELETE", "Deleting id " + id);
+
+                dbHandler.DeleteEntry((int) id);
+
+                ArrayList<String> items = dbHandler.GetEntries();
+                ArrayAdapter<String> adapter = new ArrayAdapter<String>(getActivity(),
+                        android.R.layout.simple_list_item_1, android.R.id.text1, items);
+                ListView listView = getActivity().findViewById(R.id.listViewIspis);
+                listView.setAdapter((ListAdapter) adapter);
+
+                Toast.makeText(getContext(), "BRISANJE USPJESNO", 1).show();
+
+                return true;
+            }
+        });
 
         super.onActivityCreated(savedInstanceState);
     }
