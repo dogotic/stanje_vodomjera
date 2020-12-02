@@ -22,6 +22,17 @@ import android.widget.Toast;
 import com.example.stanjevodomjera.DbHandler;
 import com.example.stanjevodomjera.R;
 
+import java.io.BufferedOutputStream;
+import java.io.BufferedWriter;
+import java.io.DataOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.ProtocolException;
+import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -117,6 +128,38 @@ public class UnosFragment extends Fragment {
                     ArrayAdapter<String> adapter =
                             new ArrayAdapter<String>(getActivity(), android.R.layout.simple_list_item_1,items);
                     listView.setAdapter((ListAdapter) adapter);
+
+                    // now try to store the entry to the remote DB via HTTP post
+                    String data = "datum="+datum+"&stanje="+stanje;
+                    URL url = null;
+                    try {
+                        url = new URL("http://cactus-iot.com.hr/vodomjer/unos_podatka.php");
+                    } catch (MalformedURLException e) {
+                        e.printStackTrace();
+                    }
+                    HttpURLConnection con = null;
+                    try {
+                        con = (HttpURLConnection) url.openConnection();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                    try {
+                        con.setRequestMethod("POST");
+                    } catch (ProtocolException e) {
+                        e.printStackTrace();
+                    }
+                    con.setDoOutput(true);
+                    try {
+                        con.getOutputStream().write(data.getBytes("UTF-8"));
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                    try {
+                        con.getInputStream();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+
                 }
             }
         });
