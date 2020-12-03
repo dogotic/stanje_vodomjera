@@ -15,7 +15,6 @@ public class DbHandler extends SQLiteOpenHelper
     private static final int DB_VERSION = 1;
     private static final String DB_NAME = "stanje_vodomjera.db";
     private static final String TABLE_StanjeVodomjera = "stanje_vodomjera";
-    private static final String KEY_ID = "id";
     private static final String KEY_DATUM = "datum";
     private static final String KEY_STANJE = "stanje";
     public DbHandler(Context context)
@@ -25,7 +24,7 @@ public class DbHandler extends SQLiteOpenHelper
     @Override
     public void onCreate(SQLiteDatabase db){
         String CREATE_TABLE = "CREATE TABLE " + TABLE_StanjeVodomjera + "("
-                + KEY_ID + " INTEGER," + KEY_DATUM + " TEXT,"
+                + KEY_DATUM + " TEXT,"
                 + KEY_STANJE + " TEXT"+ ")";
         db.execSQL(CREATE_TABLE);
     }
@@ -38,13 +37,12 @@ public class DbHandler extends SQLiteOpenHelper
     }
 
     // Adding new User Details
-    public void insertEntry(int id, String datum, String stanje)
+    public void insertEntry(String datum, String stanje)
     {
         //Get the Data Repository in write mode
         SQLiteDatabase db = this.getWritableDatabase();
         //Create a new map of values, where column names are the keys
         ContentValues cValues = new ContentValues();
-        cValues.put(KEY_ID,id);
         cValues.put(KEY_DATUM, datum);
         cValues.put(KEY_STANJE, stanje);
         // Insert the new row, returning the primary key value of the new row
@@ -72,11 +70,11 @@ public class DbHandler extends SQLiteOpenHelper
         return  entryList;
     }
 
-    public void DeleteEntry(int id)
+    public void DeleteEntry(String datum, String stanje)
     {
         //Get the Data Repository in write mode
         SQLiteDatabase db = this.getWritableDatabase();
-        db.delete(TABLE_StanjeVodomjera, KEY_ID+" = ?",new String[]{String.valueOf(id)});
+        db.delete(TABLE_StanjeVodomjera,"datum=? and stanje=?",new String[]{datum,stanje});
         db.close();
     }
 }

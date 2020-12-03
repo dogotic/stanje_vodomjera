@@ -19,7 +19,12 @@ import android.widget.Toast;
 import com.example.stanjevodomjera.DbHandler;
 import com.example.stanjevodomjera.R;
 
+import java.io.IOException;
 import java.lang.reflect.Array;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.ProtocolException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -100,9 +105,44 @@ public class IspisFragment extends Fragment {
             @Override
             public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id)
             {
-                Log.d("DELETE", "Deleting id " + id);
+                String item  = (String) parent.getItemAtPosition(position);
+                String[] item_split = item.split("              ");
+                String datum = item_split[0];
+                String stanje = item_split[1];
 
-                dbHandler.DeleteEntry((int) id);
+                dbHandler.DeleteEntry(datum,stanje);
+
+                // delete entry from remote database
+                // now try to store the entry to the remote DB via HTTP post
+                String data = "command=DELETE&datum="+datum+"&stanje="+stanje;
+                URL url = null;
+                try {
+                    url = new URL("http://cactus-iot.com.hr/vodomjer/unos_podatka.php");
+                } catch (MalformedURLException e) {
+                    e.printStackTrace();
+                }
+                HttpURLConnection con = null;
+                try {
+                    con = (HttpURLConnection) url.openConnection();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                try {
+                    con.setRequestMethod("POST");
+                } catch (ProtocolException e) {
+                    e.printStackTrace();
+                }
+                con.setDoOutput(true);
+                try {
+                    con.getOutputStream().write(data.getBytes("UTF-8"));
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                try {
+                    con.getInputStream();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
 
                 ArrayList<String> items = dbHandler.GetEntries();
                 ArrayAdapter<String> adapter = new ArrayAdapter<String>(getActivity(),

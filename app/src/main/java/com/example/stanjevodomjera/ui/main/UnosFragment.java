@@ -103,7 +103,7 @@ public class UnosFragment extends Fragment {
             {
                 // dohvati datum i stanje vodomjera
                 String dan = String.valueOf(datePicker.getDayOfMonth());
-                String mjesec = String.valueOf(datePicker.getMonth());
+                String mjesec = String.valueOf(datePicker.getMonth()+1);
                 String godina = String.valueOf(datePicker.getYear());
                 String stanje = String.valueOf(stanjeVodomjeraEditText.getText());
 
@@ -118,11 +118,8 @@ public class UnosFragment extends Fragment {
 
                     ListView listView = getActivity().findViewById(R.id.listViewIspis);
 
-                    int id = listView.getCount();
-                    Log.d("INSERT","ID = " + id);
-
                     DbHandler dbHandler = new DbHandler(getContext());
-                    dbHandler.insertEntry(id,datum,stanje);
+                    dbHandler.insertEntry(datum,stanje);
                     ArrayList<String> items = dbHandler.GetEntries();
 
                     ArrayAdapter<String> adapter =
@@ -130,7 +127,7 @@ public class UnosFragment extends Fragment {
                     listView.setAdapter((ListAdapter) adapter);
 
                     // now try to store the entry to the remote DB via HTTP post
-                    String data = "datum="+datum+"&stanje="+stanje;
+                    String data = "command=INSERT&datum="+datum+"&stanje="+stanje;
                     URL url = null;
                     try {
                         url = new URL("http://cactus-iot.com.hr/vodomjer/unos_podatka.php");
